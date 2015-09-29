@@ -1,0 +1,10 @@
+{
+  "AppSettings": {
+    "SiteTitle": "Blog.Web.Client"
+  },
+  "Data": {
+    "DefaultConnection": {
+      "ConnectionString": "Server=(localdb)\\mssqllocaldb;Database=aspnet5-Blog.Web.Client-8030fc1e-bb94-4a20-ad3a-106c05fedee9;Trusted_Connection=True;MultipleActiveResultSets=true"
+    }
+  }
+}
