@@ -1,23 +1,23 @@
 version: 1.0.{build}
 os: Visual Studio 2015
-shallow_clone: true
-install:
-- cmd: echo %DNX_BUILD_VERSION%
-- cmd: echo %WEBPROJ_ENABLEBETA7RENAMES%
-- cmd: set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
-- cmd: dnvm update-self
-- cmd: dnvm install 1.0.0-beta6
-- cmd: dnu restore --quiet --parallel
-build:
-  project: AppveyorAspNet5Build.sln
-  verbosity: minimal
-artifacts:
-  - path: '**\*.nupkg'
 environment:
-  DNX_BUILD_VERSION: beta6-%APPVEYOR_BUILD_NUMBER%
-init:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-#init:
-#- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-#on_finish:
-#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  webdeploy_site: 
+    secure: 3ncx3RGVt/3/LIGMAtN79g==
+  webdeploy_url:
+    secure: Oo/VZhq9pfkDjL2ij3KtWGq7qQdvkqYoBUrYipAxrGCfFLtKgJzjXMfwKNVey4c/P8ScowY/h3nnSD9B3nxOI647Xr9Zi3FEEoVxwoJte7U=
+  webdeploy_user: 
+    secure: VHtnliksXJA/8h80qhGVhA==
+  webdeploy_password: 
+    secure: kxx9bP3x1UznwYRxeDeprwBLFIuB79AJPMO93KaA38Jfii+VPx5JVpURccezKRhKm6l5SQ8+GzYFGDnPpIepIA==
+build_script:
+- dnvm upgrade
+- dnu restore
+- dnu publish C:\projects\aspnet5cidemo\src\EmployeeApp\ --configuration Release -o AppOutput --no-source --runtime "active"
+artifacts:
+- path: /AppOutput
+  name: AppOutput
+test_script:
+- dnx.exe C:\projects\aspnet5cidemo\test\project.json test -parallel none
+deploy_script:
+- '"C:\Program Files (x86)\IIS\Microsoft Web Deploy V3\msdeploy.exe" -verb:sync -source:IisApp="C:\projects\aspnet5cidemo\AppOutput\wwwroot" -dest:IisApp="ASPNET5CIDemo",ComputerName="%webdeploy_url%",UserName="%webdeploy_user%",Password="%webdeploy_password%",IncludeAcls="False",AuthType="Basic" -enableLink:contentLibExtension -enableRule:DoNotDeleteRule -retryAttempts:2 -enableRule:AppOffline'
+ 
